@@ -1,0 +1,9 @@
+start main
+
+_ = [ \t\n\r]* @longest
+NUMBER = [0-9]+ @longest
+
+main = _ expr _
+expr = expr '+' term | expr '-' term | term
+term = term '*' factor | term '/' factor | factor
+factor = NUMBER | '(' expr ')'

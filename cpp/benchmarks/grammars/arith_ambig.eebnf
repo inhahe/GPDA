@@ -1,0 +1,12 @@
+start main
+
+_ = [ \t\n\r]*
+NUMBER = [0-9]+
+
+main = _ expr _
+expr = expr '+' expr
+      | expr '-' expr
+      | expr '*' expr
+      | expr '/' expr
+      | NUMBER
+      | '(' expr ')'

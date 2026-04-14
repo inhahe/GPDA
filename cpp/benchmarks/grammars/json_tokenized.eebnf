@@ -1,0 +1,7 @@
+start json
+
+json = value
+value = object | array | STRING | NUMBER | TRUE_KW | FALSE_KW | NULL_KW
+object = LBRACE (pair (COMMA pair)*)? RBRACE
+pair = STRING COLON value
+array = LBRACKET (value (COMMA value)*)? RBRACKET

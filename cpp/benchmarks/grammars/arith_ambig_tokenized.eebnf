@@ -1,0 +1,9 @@
+start main
+
+main = expr
+expr = expr PLUS expr
+      | expr MINUS expr
+      | expr STAR expr
+      | expr SLASH expr
+      | NUMBER
+      | LPAREN expr RPAREN

@@ -1,0 +1,40 @@
+# Build artifacts
+cpp/build/
+build/
+*.obj
+*.lib
+*.exe
+*.pdb
+*.ilk
+*.exp
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# PLY auto-generated
+parsetab.py
+parser.out
+
+# Downloaded tools (large, easy to re-fetch; not part of the project)
+tools/
+
+# IDE / editor
+.vs/
+.vscode/
+.idea/
+*.TMP
+*.tmp
+*~
+
+# Saved blog post HTML + its asset folder (reference only)
+Idea #6*.html
+Idea #6*_files/
+
+# Third-party scrap directory from an older experiment
+FP17/
+
+# Claude agent runtime state
+.claude/
+dbg.json
