@@ -316,7 +316,7 @@ bool Parser::evaluate_predicate_bounded(std::uint32_t pred_start,
     if (start_pos == end_pos) {
         return !find_completions(cursors, start_pos).empty();
     }
-    // Deferred cursors for multi-char backref advancement (EEBNF `A - B`
+    // Deferred cursors for multi-char backref advancement (EPEG `A - B`
     // where B contains a backref; won't fire in EBNF mode, which has no
     // backrefs).  Entries past end_pos are irrelevant — the bounded
     // check only cares whether the walk completes at exactly end_pos.

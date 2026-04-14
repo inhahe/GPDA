@@ -1,0 +1,13 @@
+start json
+
+ws = [ \t\n\r]* @skip @longest
+json = value
+value = object | array | string | number | bool | null
+object = '{' (pair (',' pair)*)? '}'
+pair = string ':' value
+array = '[' (value (',' value)*)? ']'
+string = '"' strchar* '"' @longest
+strchar = [^"\\] | '\\' .
+number = '-'? ('0' | [1-9] [0-9]*) ('.' [0-9]+)? ([eE] [+\-]? [0-9]+)? @longest
+bool = 'true' | 'false' @longest
+null = 'null' @longest

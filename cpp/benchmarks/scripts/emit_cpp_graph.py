@@ -3,7 +3,7 @@ emit_cpp_graph.py — Build a grammar's graph in Python and emit C++ source
 that reconstructs the same graph in gpda::Graph form.
 
 Usage:
-    python emit_cpp_graph.py <grammar.eebnf> <output.cpp> <function_name>
+    python emit_cpp_graph.py <grammar.epeg> <output.cpp> <function_name>
 
 The output file defines:  void <function_name>(gpda::Graph& g);
 """

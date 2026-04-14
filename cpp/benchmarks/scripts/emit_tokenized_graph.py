@@ -1,6 +1,6 @@
 """
 emit_tokenized_graph.py — emit C++ code that builds the tokenized parser's
-graph (gpda_tok::Graph) from an EEBNF grammar.
+graph (gpda_tok::Graph) from an EPEG grammar.
 
 Uses the Python gpda.py bootstrap to parse the grammar.
 """
@@ -145,7 +145,7 @@ def main():
     with open(grammar_file) as f:
         text = f.read()
     gp = load_grammar(text, ebnf=ebnf)
-    # In EBNF mode, load_grammar returns GraphParser directly; in EEBNF
+    # In EBNF mode, load_grammar returns GraphParser directly; in EPEG
     # mode it returns a GrammarParser wrapping the auto-lexer.
     inner = gp.parser if hasattr(gp, 'parser') else gp
     emit(inner, func_name, out_file)

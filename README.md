@@ -1,4 +1,4 @@
-# GPDA — a graph-walking parser with unified EEBNF
+# GPDA — a graph-walking parser with unified EPEG
 
 GPDA (Generalized PDA) is a parser generator built around a novel graph-walking
 parsing algorithm that explores all viable parse paths simultaneously with
@@ -6,9 +6,10 @@ parsing algorithm that explores all viable parse paths simultaneously with
 
 The name follows the GLR/GLL convention: "generalized" = all-paths variant,
 and "PDA" (pushdown automaton) is the natural recognizer for context-free
-grammars. Earlier drafts called this "EPEG" but the PEG label was
-misleading — PEG commits to the first matching alternative, while this
-algorithm explores every alternative and dedups.
+grammars. Early drafts called the *algorithm* "EPEG"; that label now
+belongs to the grammar syntax below (which really is PEG-family), and
+the algorithm is GPDA, since PEG implies single-parse ordered-choice
+semantics that this algorithm doesn't have.
 
 It comes in four flavours:
 
@@ -20,7 +21,7 @@ It comes in four flavours:
 | C++ tokenized             | `cpp/tokenized.{hpp,cpp}`   | Same semantics, tokens in, bring-your-own-lexer |
 
 See [`SYNTAX.md`](SYNTAX.md) for the full grammar-file syntax reference,
-[`ALGORITHM.md`](ALGORITHM.md) for how each EEBNF feature compiles down
+[`ALGORITHM.md`](ALGORITHM.md) for how each EPEG feature compiles down
 to the graph-walking runtime, and [`BENCHMARKS.md`](BENCHMARKS.md) for
 current performance numbers.
 
@@ -47,7 +48,7 @@ current performance numbers.
 > I (or, actually, Claude) made two versions of this: one that uses
 > a lexer like normal parsers, and one that lexes and parses using
 > the same algorithm in one pass (also my idea). The second one also
-> allows us to use a more unified and powerful token+rule EEBNF
+> allows us to use a more unified and powerful token+rule EPEG
 > format, but is of course much slower. The normal parser supports
 > a similar unified format, though, by automatically generating
 > tokens from a unified token+rule syntax to feed to the lexer
@@ -100,7 +101,7 @@ matches the span A just consumed — the only extension to the core
 algorithm that the full feature set needed.
 
 See [`ALGORITHM.md`](ALGORITHM.md) for a full walk-through of how every
-EEBNF feature — terminals, sequences, alternation, quantifiers, rules,
+EPEG feature — terminals, sequences, alternation, quantifiers, rules,
 captures, predicates, subtraction, actions, `@skip`, left-recursion
 elimination, precedence declarations, regex compilation, the
 `@longest` DFA fast-path — translates into either a graph shape the
@@ -109,14 +110,14 @@ primitive. The runtime itself stays small.
 
 ---
 
-## Why EEBNF — concise grammars
+## Why EPEG — concise grammars
 
-Our unified EEBNF format lets you put tokens and grammar rules in one
+Our unified EPEG format lets you put tokens and grammar rules in one
 file with one syntax, use regex shorthands, and have whitespace handled
 automatically. The result is about **1.6× fewer lines** than the
 classical "grammar file + lexer file" split for the same language.
 
-**JSON in GPDA's EEBNF (12 lines total):**
+**JSON in GPDA's EPEG (12 lines total):**
 
 ```
 ws = [ \t\n\r]* @skip @longest
@@ -176,7 +177,7 @@ Line count is only part of the story. The unified form also gives you:
 ## Feature highlights
 
 * **Scannerless or tokenized** — pick your trade-off. Both use the
-  same one-file unified EEBNF syntax (no lexer-file / grammar-file
+  same one-file unified EPEG syntax (no lexer-file / grammar-file
   split either way). Scannerless additionally gives you context-aware
   lexing (different skip rules in different grammatical contexts);
   tokenized is a few times faster in steady state because it parses
@@ -228,7 +229,7 @@ cpp/benchmarks/                 Benchmark grammars, inputs, drivers, baseline to
 cpp/benchmarks/scripts/         Python → C++ graph emitters (`emit_cpp_graph.py`,
                                 `emit_tokenized_graph.py`); accept `--ebnf` flag
 SYNTAX.md                       Grammar-file syntax reference
-ALGORITHM.md                    How EEBNF features compile to graph + runtime
+ALGORITHM.md                    How EPEG features compile to graph + runtime
 BENCHMARKS.md                   Current benchmark numbers vs flex+bison + ANTLR4
 README.original.md              README of a different, older project in this
                                 repo — kept for provenance

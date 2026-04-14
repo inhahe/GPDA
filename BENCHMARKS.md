@@ -14,7 +14,7 @@ a lower bound).
 
 ## 1. Unambiguous arithmetic (precedence levels)
 
-Grammar (GPDA, scannerless form — see `cpp/benchmarks/grammars/arith.eebnf`):
+Grammar (GPDA, scannerless form — see `cpp/benchmarks/grammars/arith.epeg`):
 
 ```
 main = _ expr _
@@ -84,7 +84,7 @@ and deep trees cost us more per node.
 
 ## 2. Ambiguous arithmetic (single rule, all operators at one level)
 
-Grammar (GPDA, scannerless form — see `cpp/benchmarks/grammars/arith_ambig.eebnf`):
+Grammar (GPDA, scannerless form — see `cpp/benchmarks/grammars/arith_ambig.epeg`):
 
 ```
 main = _ expr _
@@ -212,7 +212,7 @@ Evolution of the scannerless numbers across optimisation rounds:
 
 | Stage                                    | tiny  | small | medium | large   |
 |------------------------------------------|------:|------:|-------:|--------:|
-| Phase 1 (unified EEBNF, no DFA)          | 17.80 | 157   | 1533   | >120 s  |
+| Phase 1 (unified EPEG, no DFA)          | 17.80 | 157   | 1533   | >120 s  |
 | Phase 2 (+ DFA fast-path)                | 11.7  |  99   | 1012   | (~10 s) |
 | Phase 3 (+ `@longest`)                   |  8.48 |  67   |  677   | 6924    |
 | Phase 3.5 (+ strip `@skip`/`_` from tree)| 1.05  |  5.82 |   76   |  613    |
@@ -266,10 +266,10 @@ python cpp/benchmarks/scripts/generate_inputs.py       cpp/benchmarks/inputs
 python cpp/benchmarks/scripts/generate_arith_inputs.py cpp/benchmarks/inputs
 
 # 2. Regenerate graph C++ source (only when a grammar changes)
-python cpp/benchmarks/scripts/emit_cpp_graph.py       cpp/benchmarks/grammars/arith.eebnf           cpp/benchmarks/generated/arith_scannerless.cpp        build_arith_graph
-python cpp/benchmarks/scripts/emit_cpp_graph.py       cpp/benchmarks/grammars/arith_ambig.eebnf     cpp/benchmarks/generated/arith_ambig_scannerless.cpp  build_arith_ambig_graph
-python cpp/benchmarks/scripts/emit_tokenized_graph.py cpp/benchmarks/grammars/arith_tokenized.eebnf cpp/benchmarks/generated/arith_tokenized.cpp          build_arith_tok_graph
-python cpp/benchmarks/scripts/emit_tokenized_graph.py cpp/benchmarks/grammars/arith_ambig_tokenized.eebnf cpp/benchmarks/generated/arith_ambig_tokenized.cpp build_arith_ambig_tok_graph
+python cpp/benchmarks/scripts/emit_cpp_graph.py       cpp/benchmarks/grammars/arith.epeg           cpp/benchmarks/generated/arith_scannerless.cpp        build_arith_graph
+python cpp/benchmarks/scripts/emit_cpp_graph.py       cpp/benchmarks/grammars/arith_ambig.epeg     cpp/benchmarks/generated/arith_ambig_scannerless.cpp  build_arith_ambig_graph
+python cpp/benchmarks/scripts/emit_tokenized_graph.py cpp/benchmarks/grammars/arith_tokenized.epeg cpp/benchmarks/generated/arith_tokenized.cpp          build_arith_tok_graph
+python cpp/benchmarks/scripts/emit_tokenized_graph.py cpp/benchmarks/grammars/arith_ambig_tokenized.epeg cpp/benchmarks/generated/arith_ambig_tokenized.cpp build_arith_ambig_tok_graph
 
 # flex+bison for arith.y / arith.l
 cd cpp/benchmarks/generated

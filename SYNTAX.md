@@ -1,4 +1,4 @@
-# EEBNF Syntax Reference
+# EPEG Syntax Reference
 
 This document describes the grammar syntax accepted by the two GPDA parser
 implementations:
@@ -82,7 +82,7 @@ resulting parse tree, it appears as a child node named `val`.
 
 `A - B` matches exactly what `A` matches, but rejects the match if `B`
 would *also* match the same span (same start, same end). It's the
-standard ISO 14977 EBNF exception operator, usable in both EEBNF and
+standard ISO 14977 EBNF exception operator, usable in both EPEG and
 EBNF modes and in both parsers.
 
 ```
@@ -193,7 +193,7 @@ B = A 'z' | 'w'
 ### Formal EBNF (tokenized) <a id="formal-ebnf-tokenized"></a>
 
 ```ebnf
-(* Meta-grammar describing the EEBNF format accepted by gpda.py *)
+(* Meta-grammar describing the EPEG format accepted by gpda.py *)
 
 grammar      = { comment | newline } { decl } ;
 decl         = start_decl | rule ;
@@ -1033,14 +1033,14 @@ Supported constructs:
 | `{ A }`                    | Zero-or-more                           |
 | `( A )`                    | Grouping                               |
 | `N * A`                    | Exactly *N* copies of `A`              |
-| `A - B`                    | Subtraction (same as in EEBNF mode)    |
+| `A - B`                    | Subtraction (same as in EPEG mode)    |
 | `"text"`, `'text'`         | Terminal string                        |
 | `(* comment *)`            | Comment                                |
 
 Rejected with a parse error:
 - `? special sequence ?` — implementation-defined, cannot be
   interpreted.
-- Any EEBNF extension (no `/regex/`, no `@skip`, no `@keyword`, no
+- Any EPEG extension (no `/regex/`, no `@skip`, no `@keyword`, no
   captures, no predicates, no actions).
 
 In **scannerless** mode, terminal strings match contiguous characters

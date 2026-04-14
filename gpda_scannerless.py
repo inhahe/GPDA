@@ -1979,7 +1979,7 @@ class ScannerlessParser:
             cursors = [(pred_start, (), [], {})]
             if start_pos == end_pos:
                 return bool(self._find_completions(cursors, start_pos))
-            # Deferred cursors for multi-char backref advancement (EEBNF
+            # Deferred cursors for multi-char backref advancement (EPEG
             # `A - B` where B contains a backref).
             deferred = {}
             for i in range(start_pos, end_pos):
@@ -2152,7 +2152,7 @@ class ScannerlessParser:
 # ========================== Bootstrap Parser ==========================
 
 class UnifiedBootstrap:
-    """Recursive-descent parser for unified EEBNF grammars.
+    """Recursive-descent parser for unified EPEG grammars.
 
     Unified syntax:
         start <rule_name>
@@ -2388,7 +2388,7 @@ class UnifiedBootstrap:
         mod = self._parse_modifier()
         if mod is not None:
             elem['modifier'] = mod
-        # EEBNF subtraction: `A - B` matches A but rejects if B matches
+        # EPEG subtraction: `A - B` matches A but rejects if B matches
         # the same span.  Binds looser than modifiers (so `A* - B` means
         # `(A*) - B`) and tighter than juxtaposition / `|`.
         if self._at('MINUS'):
@@ -2517,7 +2517,7 @@ class EBNFBootstrap:
 
     Rejected (SyntaxError):
         '?special sequence?' — implementation-defined, not interpretable
-        All EEBNF extensions (regex, captures, predicates, actions, @*)
+        All EPEG extensions (regex, captures, predicates, actions, @*)
     """
 
     _LEXER_RULES = [
@@ -2669,10 +2669,10 @@ class EBNFBootstrap:
 def load_grammar(text, ebnf=False):
     """Parse a grammar string and return a ScannerlessParser.
 
-    By default the grammar is parsed as unified EEBNF (GPDA's extended
-    EBNF with regex, predicates, captures, actions, @directives, etc).
+    By default the grammar is parsed as unified EPEG (GPDA's PEG-family
+    syntax with regex, predicates, captures, actions, @directives, etc).
     Pass ``ebnf=True`` to parse as ISO 14977 EBNF instead — a strict
-    subset where `A - B` subtraction is supported but no EEBNF
+    subset where `A - B` subtraction is supported but no EPEG
     extensions are permitted."""
     if ebnf:
         grammar = EBNFBootstrap(text).parse()

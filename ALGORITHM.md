@@ -1,8 +1,8 @@
-# How EEBNF features map to the graph-walking algorithm
+# How EPEG features map to the graph-walking algorithm
 
 GPDA's core is small: walk a set of cursors through a grammar graph,
 matching one input symbol per step, and deduplicate cursors that
-converge to the same state. All of EEBNF's surface features — rules,
+converge to the same state. All of EPEG's surface features — rules,
 alternatives, quantifiers, captures, predicates, subtraction, left
 recursion, auto-whitespace, ordered choice, precedence — compile
 down to that core, mostly as graph shapes and mostly without any
@@ -491,7 +491,7 @@ stmt = _lit_1 expr _lit_2 stmt
 ```
 
 …plus a generated lexer that tokenizes input into these auto-
-created token types. This preserves the one-file EEBNF form for
+created token types. This preserves the one-file EPEG form for
 the tokenized parser at the cost of a lexer-synthesis step.
 
 ---

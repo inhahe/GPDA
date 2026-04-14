@@ -9,7 +9,7 @@ don't match the current input token. No lookahead or lookbehind is needed.
 
 Based on: https://exalumen.blog/2025/03/06/epeg-a-new-way-of-parsing/
 
-Supports EEBNF operators:
+Supports EPEG operators:
     |       alternation
     *       zero-or-more (greedy)
     *?      zero-or-more (non-greedy)
@@ -1279,16 +1279,16 @@ class GraphParser:
             f"Expected: {exp_str}")
 
 
-# ========================== EEBNF Bootstrap Parser ==========================
+# ========================== EPEG Bootstrap Parser ==========================
 
-class EEBNFBootstrap:
-    """Recursive-descent parser for EEBNF grammar files.
+class EPEGBootstrap:
+    """Recursive-descent parser for EPEG grammar files.
 
     Produces the grammar dict expected by GraphBuilder.  This is the
-    'bootstrap' parser: it parses EEBNF using conventional techniques so
+    'bootstrap' parser: it parses EPEG using conventional techniques so
     that the graph parser can then take over for everything else.
 
-    EEBNF format:
+    EPEG format:
         start <rule_name>
 
         rule_name = sequence ('|' sequence)*
@@ -1300,7 +1300,7 @@ class EEBNFBootstrap:
     Convention: ALL_CAPS names are token references; others are rule refs.
     """
 
-    EEBNF_LEXER = Lexer([
+    EPEG_LEXER = Lexer([
         ('COMMENT',  r'#[^\n]*'),
         ('NEWLINE',  r'\n'),
         ('WS',       r'[ \t\r]+'),
@@ -1338,7 +1338,7 @@ class EEBNFBootstrap:
     ], ignore={'WS', 'COMMENT'})
 
     def __init__(self, text):
-        self.tokens = self.EEBNF_LEXER.tokenize(text)
+        self.tokens = self.EPEG_LEXER.tokenize(text)
         self.pos = 0
         self._skip_newlines()
 
@@ -1371,7 +1371,7 @@ class EEBNFBootstrap:
     # ---- grammar rules -----------------------------------------------
 
     def parse(self):
-        """Parse the EEBNF text.  Returns a grammar dict."""
+        """Parse the EPEG text.  Returns a grammar dict."""
         rules = {}
         skip_info = {}
         start = None
@@ -1477,7 +1477,7 @@ class EEBNFBootstrap:
         mod = self._parse_modifier()
         if mod is not None:
             elem['modifier'] = mod
-        # EEBNF subtraction: `A - B` matches A but rejects if B matches
+        # EPEG subtraction: `A - B` matches A but rejects if B matches
         # the same span.  Binds looser than modifiers (so `A* - B` means
         # `(A*) - B`) and tighter than juxtaposition / `|`.
         if self._at('MINUS'):
@@ -1779,7 +1779,7 @@ class EBNFBootstrap:
 
     Rejected (SyntaxError):
         '?special sequence?' — implementation-defined, not interpretable
-        All EEBNF extensions (regex, @directives, predicates, actions, etc.)
+        All EPEG extensions (regex, @directives, predicates, actions, etc.)
 
     In tokenized mode, terminal strings match on a token's ``value``
     field (bring-your-own-lexer) — ISO EBNF has no concept of tokens,
@@ -1924,13 +1924,13 @@ class EBNFBootstrap:
 def load_grammar(text, ebnf=False):
     """Parse a grammar string and return a parser.
 
-    By default, parses EEBNF (GPDA's extended EBNF with regex tokens,
+    By default, parses EPEG (GPDA's PEG-family grammar syntax with regex tokens,
     @directives, predicates, actions, etc.) and returns a
     ``GrammarParser`` that can accept raw text (it runs the auto-lexer
     first).
 
     With ``ebnf=True``, parses ISO 14977 EBNF — a strict subset where
-    ``A - B`` subtraction is supported but no EEBNF extensions, no
+    ``A - B`` subtraction is supported but no EPEG extensions, no
     regex tokens, no auto-lexer.  Returns a ``GraphParser`` directly;
     the caller supplies pre-lexed tokens (bring-your-own-lexer).  The
     grammar's terminal strings match a token's ``value`` field.
@@ -1942,7 +1942,7 @@ def load_grammar(text, ebnf=False):
         return GraphParser(rules, start, lr_meta,
                            stripped_names=stripped,
                            capture_names=captures)
-    bootstrap = EEBNFBootstrap(text)
+    bootstrap = EPEGBootstrap(text)
     grammar = bootstrap.parse()
     grammar = _resolve_tokens(grammar)
     lexer = _build_auto_lexer(grammar['tokens'], grammar['skip_types'])
@@ -1956,17 +1956,17 @@ def load_grammar(text, ebnf=False):
 
 
 def parse(grammar_text, source):
-    """One-shot: parse source against an EEBNF grammar string."""
+    """One-shot: parse source against an EPEG grammar string."""
     return load_grammar(grammar_text).parse(source)
 
 
-# ========================== EEBNF Self-Description ==========================
+# ========================== EPEG Self-Description ==========================
 
-# This grammar describes the EEBNF format itself, written in EEBNF.
+# This grammar describes the EPEG format itself, written in EPEG.
 # It can be parsed by load_grammar() and then used with the graph parser
-# to parse other EEBNF files — completing the bootstrap.
+# to parse other EPEG files — completing the bootstrap.
 
-EEBNF_GRAMMAR = r"""
+EPEG_GRAMMAR = r"""
 start grammar
 
 grammar = NEWLINE* decl+ NEWLINE*
@@ -2158,34 +2158,34 @@ if __name__ == '__main__':
     check("total 3 children", len(tree.children) == 3)
 
     # ---- Test 10: self-bootstrap ----
-    print("\n--- Test 10: EEBNF self-bootstrap ---")
-    # Parse the EEBNF grammar description using the bootstrap parser
-    bootstrap = EEBNFBootstrap(EEBNF_GRAMMAR)
-    eebnf_grammar_dict = bootstrap.parse()
-    check("bootstrap parsed EEBNF grammar",
-          'grammar' in eebnf_grammar_dict['rules'])
+    print("\n--- Test 10: EPEG self-bootstrap ---")
+    # Parse the EPEG grammar description using the bootstrap parser
+    bootstrap = EPEGBootstrap(EPEG_GRAMMAR)
+    epeg_grammar_dict = bootstrap.parse()
+    check("bootstrap parsed EPEG grammar",
+          'grammar' in epeg_grammar_dict['rules'])
     check("start rule is 'grammar'",
-          eebnf_grammar_dict['start'] == 'grammar')
+          epeg_grammar_dict['start'] == 'grammar')
 
-    # Build a graph parser from the EEBNF grammar
+    # Build a graph parser from the EPEG grammar
     builder = GraphBuilder()
-    eebnf_rules, eebnf_start, _, _, _ = builder.build(eebnf_grammar_dict)
-    eebnf_parser = GraphParser(eebnf_rules, eebnf_start)
+    epeg_rules, epeg_start, _, _, _ = builder.build(epeg_grammar_dict)
+    epeg_parser = GraphParser(epeg_rules, epeg_start)
 
     # Now use the graph parser to parse a simple test grammar
     test_grammar_text = """start expr
 expr = term ('+' term)*
 term = NUMBER
 """
-    test_tokens = EEBNFBootstrap.EEBNF_LEXER.tokenize(test_grammar_text)
-    tree = eebnf_parser.parse(test_tokens)
+    test_tokens = EPEGBootstrap.EPEG_LEXER.tokenize(test_grammar_text)
+    tree = epeg_parser.parse(test_tokens)
     check("graph parser parsed test grammar", tree.name == 'grammar')
     print(tree.pretty())
 
-    # Also parse the EEBNF grammar itself (full self-bootstrap)
-    eebnf_tokens = EEBNFBootstrap.EEBNF_LEXER.tokenize(EEBNF_GRAMMAR)
-    tree = eebnf_parser.parse(eebnf_tokens)
-    check("full self-bootstrap: EEBNF parsed itself", tree.name == 'grammar')
+    # Also parse the EPEG grammar itself (full self-bootstrap)
+    epeg_tokens = EPEGBootstrap.EPEG_LEXER.tokenize(EPEG_GRAMMAR)
+    tree = epeg_parser.parse(epeg_tokens)
+    check("full self-bootstrap: EPEG parsed itself", tree.name == 'grammar')
     print(tree.pretty())
 
     # ---- Test 11: comments and blank lines ----
@@ -2213,10 +2213,10 @@ term = NUMBER
     check("comments: 5 children (3 terms + 2 pluses)",
           len(tree.children) == 5)
 
-    # Verify the graph parser (EEBNF self-description) also handles them
-    commented_tokens = EEBNFBootstrap.EEBNF_LEXER.tokenize(
+    # Verify the graph parser (EPEG self-description) also handles them
+    commented_tokens = EPEGBootstrap.EPEG_LEXER.tokenize(
         grammar_with_comments)
-    tree = eebnf_parser.parse(commented_tokens)
+    tree = epeg_parser.parse(commented_tokens)
     check("comments: graph parser handles comments and blank lines",
           tree.name == 'grammar')
 
